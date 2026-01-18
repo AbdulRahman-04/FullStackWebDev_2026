@@ -137,7 +137,7 @@ function heyya(){
 const now = new Date();
 
 console.log(now.getFullYear()); // year
-console.log(now.getMonth());    // 0–11 (⚠️ Jan = 0)
+console.log(now.getMonth());    
 console.log(now.getDate());     // day of month
 
 console.log(now.getHours());   
