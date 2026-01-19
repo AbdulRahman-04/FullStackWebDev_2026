@@ -319,3 +319,20 @@ let myVar1 : myFinalType =  {
 
 // console.log(myVar1);
 
+// classes and objects :
+
+// creating class 
+
+class Device  {
+    name = "whirlpool";
+    price = 120;
+}
+
+const d1 = new Device()
+const d2 = new Device()
+
+console.log(d1);
+console.log(d2);
+
+
+
