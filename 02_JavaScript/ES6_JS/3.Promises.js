@@ -87,6 +87,9 @@ function main() {
     .then(() => console.log("upload completed"))
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      console.log("always runs ");
     });
 }
 
