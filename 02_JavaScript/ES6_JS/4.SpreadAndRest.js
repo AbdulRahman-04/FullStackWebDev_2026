@@ -112,4 +112,5 @@ SPREAD vs REST (SHORT)
 
 Spread → breaks values apart
 Rest   → collects values together
+
 */
