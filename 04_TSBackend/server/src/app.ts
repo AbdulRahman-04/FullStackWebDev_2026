@@ -3,6 +3,13 @@ import config from "config"
 // db connect
 import "./utils/dbConnect"
 
+// user router
+import userRouter from "./controllers/public/users"
+//auth middleware
+import authMiddleware from "./middleware/auth"
+// todo router
+import todoRouter from "./controllers/private/todos"
+
 const app:Application = express()
 
 app.use(express.json())
@@ -19,6 +26,14 @@ app.get("/", (req: Request, res:Response)=>{
         res.status(404).json(error)
     }
 })
+
+
+// public apis 
+app.use("/api/public", userRouter)
+
+// private apis 
+app.use("/api/private", authMiddleware, todoRouter )
+
 
 
 app.listen(Number(PORT), ()=>{

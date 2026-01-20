@@ -3,7 +3,7 @@ import mongoose, {Document, Schema, Model} from "mongoose";
 interface ITodo extends Document {
     date: string,
     todono: number,
-    todoTtitle: string,
+    todoTitle: string,
     todoDescription: string,
     fileUpload: string
 }
@@ -17,7 +17,7 @@ const toDoSchema = new Schema<ITodo>({
         type: Number,
         required: true
     },
-    todoTtitle: {
+    todoTitle: {
         type: String,
         required: true
     },

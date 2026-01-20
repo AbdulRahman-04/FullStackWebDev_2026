@@ -23,7 +23,7 @@ const UserSchema = new Schema<IUser>({
         type: String,
         required: true,
          maxlength: 70,
-        minlength: 10
+        minlength: 5
     },
     email: {
         type: String,
@@ -47,20 +47,20 @@ const UserSchema = new Schema<IUser>({
             type: Boolean,
             default: false
         },
-        phoneVerified: {
-            type: Boolean,
-            default: false
-        }
+        // phoneVerified: {
+        //     type: Boolean,
+        //     default: false
+        // }
     },
     userVerifyToken: {
         emailVerifyToken: {
             type: String,
             default: null
         },
-        phoneVerifyToken: {
-            type: String,
-            default: null
-        }
+        // phoneVerifyToken: {
+        //     type: String,
+        //     default: null
+        // }
     }
 
 },{
