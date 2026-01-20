@@ -1,0 +1,6 @@
+GO INSTALLATION SETUP :
+
+ - remove old go version from ur wsl   sudo rm -rf /usr/local/go
+ - install latest go version           wget https://go.dev/dl/go1.25.5.linux-amd64.tar.gz && sudo tar -C /usr/local -xzf go1.25.5.linux-amd64.tar.gz
+ - Add path in go file                 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc && source ~/.bashrc
+ - check go version                    go version  
