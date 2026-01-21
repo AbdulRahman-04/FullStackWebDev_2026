@@ -66,4 +66,17 @@ func main(){
 
 	// format specifiers: %s : string, %d : integers, %t : boolean, %f: float values
     
+
+	fmt.Println("hi")
+	var myVar = 12
+	fmt.Println(myVar)
+
+	const myVar1 = 12
+	fmt.Println(myVar1)
+
+	goVar := "hey"
+	fmt.Println(goVar)
+	
+	fmt.Println("hiii")
+	fmt.Printf("%d %d %s\n", myVar, myVar1, goVar)
 }
