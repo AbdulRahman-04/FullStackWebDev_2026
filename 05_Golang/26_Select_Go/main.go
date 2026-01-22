@@ -16,7 +16,7 @@ func w1(ch1 chan string, wg *sync.WaitGroup) {
 func w2(ch2 chan bool, wg *sync.WaitGroup) {
  
 	defer wg.Done()
-	time.Sleep(1500*time.Millisecond)
+	time.Sleep(2500*time.Millisecond)
 	// ch2 <- true
 	ch2 <- false
 	ch2 <- true
