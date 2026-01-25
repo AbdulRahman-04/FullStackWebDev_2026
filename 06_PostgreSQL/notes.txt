@@ -1,1 +1,268 @@
-POSTGRESQL CRASH COURSE : 
+========================================
+PostgreSQL Complete Notes (Beginner)
+========================================
+
+----------------------------------------
+1) What is Database (DB)?
+----------------------------------------
+Database = data store karne ki jagah.
+
+Example:
+Users ka data, products ka data, orders ka data
+-> sab database me store hota hai.
+
+Instead of:
+text files / excel
+We use:
+Database (fast, safe, structured)
+
+----------------------------------------
+2) What is DBMS?
+----------------------------------------
+DBMS = Database Management System
+
+It is software to:
+- store data
+- update data
+- delete data
+- secure data
+
+Examples:
+MySQL, PostgreSQL, Oracle, SQL Server
+
+----------------------------------------
+3) What is RDBMS?
+----------------------------------------
+RDBMS = Relational Database Management System
+
+Data is stored in:
+Tables (rows + columns)
+
+Relations:
+One table can be related to another table.
+
+Example:
+users table
+orders table
+orders.user_id -> users.id
+
+Examples:
+PostgreSQL, MySQL, Oracle
+
+----------------------------------------
+4) What is PostgreSQL?
+----------------------------------------
+PostgreSQL = open-source RDBMS
+
+Features:
+- free
+- very powerful
+- ACID compliant
+- used in real companies
+
+----------------------------------------
+5) Advantages of PostgreSQL
+----------------------------------------
+- Open source (free)
+- Very reliable
+- Supports JSON + SQL
+- Strong constraints
+- Good for large apps
+- Used with backend (Node, Go, Java, etc.)
+
+----------------------------------------
+6) Install PostgreSQL (WSL - Ubuntu)
+----------------------------------------
+
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+
+Start service:
+sudo service postgresql start
+
+Login:
+sudo -u postgres psql
+
+Create database:
+CREATE DATABASE testdb;
+\c testdb
+
+----------------------------------------
+7) pgAdmin (GUI Tool)
+----------------------------------------
+pgAdmin = graphical tool to run SQL queries
+
+Steps:
+- Open pgAdmin
+- Register Server
+- Host: localhost
+- Port: 5432
+- Username: postgres
+- Password: your password
+- Select DB and Select query tool to go to query tool of that specific db
+
+----------------------------------------
+8) Create Table
+----------------------------------------
+
+CREATE TABLE employees(
+  emp_id SERIAL PRIMARY KEY,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  salary DECIMAL(10,2) NOT NULL,
+  dept VARCHAR(100) DEFAULT 'IT',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+----------------------------------------
+9) Insert Data
+----------------------------------------
+
+INSERT INTO employees 
+(emp_id, email, name, salary, dept, is_active, created_at)
+VALUES
+(DEFAULT, 'a1@gmail.com', 'Ali', 40000, 'IT', DEFAULT, DEFAULT),
+(DEFAULT, 'a2@gmail.com', 'Zain', 45000, 'HR', DEFAULT, DEFAULT),
+(DEFAULT, 'a3@gmail.com', 'Umar', 50000, 'Finance', DEFAULT, DEFAULT);
+
+----------------------------------------
+10) SELECT
+----------------------------------------
+
+SELECT * FROM employees;
+SELECT name, salary FROM employees;
+
+Meaning:
+SELECT = dikhao
+FROM = kis table se
+
+----------------------------------------
+11) WHERE (Filter)
+----------------------------------------
+
+SELECT * FROM employees WHERE dept = 'IT';
+SELECT * FROM employees WHERE salary > 45000;
+SELECT * FROM employees WHERE is_active = true;
+
+----------------------------------------
+12) IN / NOT IN / BETWEEN
+----------------------------------------
+
+SELECT * FROM employees WHERE dept IN ('IT','HR');
+SELECT * FROM employees WHERE dept NOT IN ('Sales');
+SELECT * FROM employees WHERE salary BETWEEN 40000 AND 50000;
+
+----------------------------------------
+13) DISTINCT
+----------------------------------------
+
+SELECT DISTINCT dept FROM employees;
+SELECT DISTINCT dept, salary FROM employees;
+
+Meaning:
+duplicate hata ke unique values
+
+----------------------------------------
+14) ORDER BY
+----------------------------------------
+
+SELECT * FROM employees ORDER BY salary ASC;
+SELECT * FROM employees ORDER BY salary DESC;
+SELECT * FROM employees ORDER BY dept ASC, salary DESC;
+
+----------------------------------------
+15) LIMIT & OFFSET
+----------------------------------------
+
+SELECT * FROM employees ORDER BY salary DESC LIMIT 3;
+SELECT * FROM employees ORDER BY salary DESC LIMIT 3 OFFSET 3;
+
+----------------------------------------
+16) LIKE
+----------------------------------------
+
+SELECT * FROM employees WHERE name LIKE 'A%';
+SELECT * FROM employees WHERE email LIKE '%gmail%';
+SELECT * FROM employees WHERE name LIKE '%an%';
+
+----------------------------------------
+17) COUNT
+----------------------------------------
+
+SELECT COUNT(*) FROM employees;
+SELECT COUNT(*) FROM employees WHERE dept = 'IT';
+SELECT COUNT(DISTINCT dept) FROM employees;
+
+----------------------------------------
+18) SUM / AVG / MIN / MAX
+----------------------------------------
+
+SELECT SUM(salary) FROM employees;
+SELECT AVG(salary) FROM employees;
+SELECT MAX(salary) FROM employees;
+SELECT MIN(salary) FROM employees;
+
+----------------------------------------
+19) GROUP BY
+----------------------------------------
+
+SELECT dept FROM employees GROUP BY dept;
+
+SELECT dept, COUNT(*) 
+FROM employees 
+GROUP BY dept;
+
+SELECT dept, SUM(salary)
+FROM employees
+GROUP BY dept;
+
+Meaning:
+Group rows by dept and calculate per dept
+
+----------------------------------------
+20) ALTER TABLE (Rename Column)
+----------------------------------------
+
+ALTER TABLE employees
+RENAME COLUMN created_at TO myCreated_at;
+
+----------------------------------------
+21) DROP COLUMN
+----------------------------------------
+
+ALTER TABLE employees DROP COLUMN experience;
+ALTER TABLE employees DROP COLUMN IF EXISTS experience;
+
+----------------------------------------
+22) ADD Constraint
+----------------------------------------
+
+ALTER TABLE employees
+ALTER COLUMN email SET NOT NULL;
+
+ALTER TABLE employees
+ADD CONSTRAINT unique_email UNIQUE (email);
+
+----------------------------------------
+23) DROP Constraint
+----------------------------------------
+
+ALTER TABLE employees
+ALTER COLUMN email DROP NOT NULL;
+
+ALTER TABLE employees
+DROP CONSTRAINT unique_email;
+
+----------------------------------------
+24) Change Constraint (Drop + Add)
+----------------------------------------
+
+ALTER TABLE employees DROP CONSTRAINT unique_email;
+
+ALTER TABLE employees
+ADD CONSTRAINT unique_email_dept UNIQUE (email, dept);
+
+========================================
+END OF NOTES
+========================================
