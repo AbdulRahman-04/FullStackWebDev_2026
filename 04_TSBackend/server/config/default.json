@@ -5,5 +5,7 @@
     "PASS": "zhdc bgxq iyxb hqpe",
     "SID": "",
     "TOKEN": "",
-    "PHONE": ""
+    "PHONE": "",
+    "JWT_KEY": "RAHMAN123",
+    "URL":"http://localhost:8049"
 }

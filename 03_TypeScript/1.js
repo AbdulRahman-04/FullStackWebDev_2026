@@ -148,4 +148,17 @@ var myVar1 = {
     role: true,
     isAlive: true
 };
-console.log(myVar1);
+// console.log(myVar1);
+// classes and objects :
+// creating class 
+var Device = /** @class */ (function () {
+    function Device() {
+        this.name = "whirlpool";
+        this.price = 120;
+    }
+    return Device;
+}());
+var d1 = new Device();
+var d2 = new Device();
+console.log(d1);
+console.log(d2);
