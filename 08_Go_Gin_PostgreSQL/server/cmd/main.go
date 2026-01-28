@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,41 +14,45 @@ import (
 )
 
 func main(){
-	r := gin.Default()
+
+	r:= gin.Default()
 
 	r.GET("/", func (c*gin.Context)  {
+
 		c.JSON(200, gin.H{
-			"msg": "server started",
+			"msg": "hi",
 		})
+		
 	})
 
 	r.GET("/slow", func (c*gin.Context)  {
-		time.Sleep(5*time.Second)
+		time.Sleep(6*time.Second)
 		c.JSON(200, gin.H{
-			"msg": "task done✅",
+			"msg": "task done",
 		})
+		
 	})
 
-	// server start
+	// server start 
 	srv := &http.Server{
-		Addr: ":5455",
+		Addr: ":5545",
 		Handler: r,
 	}
 
-	// go routine pe server
+	// go routine 
 	go func() {
-		log.Printf("server started at %s\n", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil  && err != http.ErrServerClosed {
-			log.Fatalf("server start err %s\n", err)
+		log.Printf("server started at port %s", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed{
+			log.Printf("err : %s", err)
 		}
 	}()
 
-	// gracefful shutdown
+	// graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<- quit
 
-	log.Printf("system shutdown recieved💠")
+	log.Printf("system shutdown recieved💀")
 
 	// ctx 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -55,9 +60,8 @@ func main(){
 
 	err := srv.Shutdown(ctx)
 	if err != nil {
-		log.Printf("server shutdown err %s\n", err)
+		fmt.Println(err)
 	}
 
 	log.Printf("server gracefully shutdown✅")
-	
 }
