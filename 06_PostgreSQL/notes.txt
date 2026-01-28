@@ -326,6 +326,175 @@ FROM employees
 RIGHT JOIN dept
 ON employees.dept_id = dept.dept_id;
 
+
+INDEXING N POSTGRESQL: 
+-- Index create
+CREATE INDEX idx_users_email ON users(email);
+
+-- Check index use hua ya nahi
+EXPLAIN ANALYZE
+SELECT * FROM users WHERE email = 'a@gmail.com';
+
+-- Index Scan = index use
+-- Seq Scan   = full table scan
+
+-- Drop index
+DROP INDEX idx_users_email;
+
+
+
+TRANSACTIONS IN SQL/POSTGRESQL:
+-- COMMIT example (save)
+BEGIN;
+
+INSERT INTO orders(order_no, customer, status, amount)
+VALUES ('ORD1', 'Ali', 'pending', 1000);
+
+COMMIT;
+
+
+-- ROLLBACK example (undo)
+BEGIN;
+
+INSERT INTO orders(order_no, customer, status, amount)
+VALUES ('ORD2', 'Rahman', 'pending', 2000);
+
+ROLLBACK;
+
+
+-- Auto rollback on error
+BEGIN;
+
+INSERT INTO orders(order_no, customer, status, amount)
+VALUES ('ORD3', 'X', 'pending', 3000);
+
+UPDATE orders SET wrongcol = 5 WHERE order_no = 'ORD3'; -- error
+
+COMMIT;
+
+-- Check (should return 0 rows)
+SELECT * FROM orders WHERE order_no = 'ORD3';
+
+-- After error always do:
+ROLLBACK;
+
+
+/* =========================
+   ON DELETE (FOREIGN KEY)
+   =========================
+
+ON DELETE = jab parent table ka row delete hota hai,
+toh child table ke rows ke saath kya hoga, ye decide karta hai.
+
+Parent = users
+Child  = posts
+*/
+
+
+/* =========================
+   1) ON DELETE CASCADE
+   =========================
+Definition:
+Parent delete → child rows bhi delete
+*/
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name TEXT
+);
+
+CREATE TABLE posts_cascade (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT
+);
+
+INSERT INTO users(name) VALUES ('Ali');
+INSERT INTO posts_cascade(user_id, title) VALUES (1, 'Ali post');
+
+DELETE FROM users WHERE id = 1;
+
+SELECT * FROM posts_cascade;  -- result: empty
+
+
+
+/* =========================
+   2) ON DELETE SET NULL
+   =========================
+Definition:
+Parent delete → child row rahegi, bas FK NULL ho jaayega
+*/
+
+CREATE TABLE posts_setnull (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE SET NULL,
+  title TEXT
+);
+
+INSERT INTO users(name) VALUES ('Rahman');
+INSERT INTO posts_setnull(user_id, title) VALUES (2, 'Rahman post');
+
+DELETE FROM users WHERE id = 2;
+
+SELECT * FROM posts_setnull;  
+-- result: user_id = NULL
+
+
+
+/* =========================
+   3) ON DELETE RESTRICT (default)
+   =========================
+Definition:
+Parent delete allowed nahi jab tak child rows exist karti ho
+*/
+
+CREATE TABLE posts_restrict (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE RESTRICT,
+  title TEXT
+);
+
+INSERT INTO users(name) VALUES ('Zaid');
+INSERT INTO posts_restrict(user_id, title) VALUES (3, 'Zaid post');
+
+DELETE FROM users WHERE id = 3;  
+-- ERROR: violates foreign key constraint
+
+
+
+/* =========================
+   4) ON DELETE NO ACTION
+   =========================
+Definition:
+RESTRICT jaisa hi behave karta hai (delete block)
+*/
+
+CREATE TABLE posts_noaction (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE NO ACTION,
+  title TEXT
+);
+
+INSERT INTO users(name) VALUES ('Umar');
+INSERT INTO posts_noaction(user_id, title) VALUES (4, 'Umar post');
+
+DELETE FROM users WHERE id = 4;  
+-- ERROR
+
+
+
+/* =========================
+   SUMMARY
+   =========================
+
+CASCADE   → child delete
+SET NULL  → child rahe, FK NULL
+RESTRICT  → delete block
+NO ACTION → delete block
+*/
+
+
+
 ========================================
 END OF NOTES
 ========================================
