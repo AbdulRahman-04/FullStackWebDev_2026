@@ -9,23 +9,29 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AbdulRahman-04/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/config"
+	"github.com/AbdulRahman-04/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func main(){
+	// config load
+	config.LoadEnv()
+
+	// database load
+	utils.ConnectPostgres()
  
-	r := gin.Default()
+	// gin server 
+	r:= gin.Default()
 
 	r.GET("/", func (c*gin.Context)  {
-
 		c.JSON(200, gin.H{
-			"msg": "hi",
+			"msg": "server started",
 		})
 		
 	})
 
 	r.GET("/slow", func (c*gin.Context)  {
-
 		time.Sleep(5*time.Second)
 		c.JSON(200, gin.H{
 			"msg": "task done",
@@ -33,23 +39,20 @@ func main(){
 		
 	})
 
-
-	// server start 
 	srv := &http.Server{
 		Addr: ":6065",
 		Handler: r,
 	}
 
-	go func() {
+	go func() { 
 		log.Printf("server started at port %s", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed{
-
-			log.Fatalf("couldn't start server")
-             return
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+             log.Fatalf("err %s", err)
+			 return
 		}
 	}()
 
-	// grace ful shutdown
+	// graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<- quit
@@ -62,10 +65,11 @@ func main(){
 
 	err := srv.Shutdown(ctx)
 	if err != nil {
-		log.Fatalf("couldn't shutdown server❌")
+		log.Printf("err %s", err)
 		return
 	}
 
-	log.Printf("server shutdown gracefull!✅")
+	log.Printf("Server gracefully shutdown✅")
+
 
 }
