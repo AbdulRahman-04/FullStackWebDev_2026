@@ -14,45 +14,44 @@ import (
 )
 
 func main(){
-
-	r:= gin.Default()
+ 
+	// create gin server 
+	r := gin.Default()
 
 	r.GET("/", func (c*gin.Context)  {
-
 		c.JSON(200, gin.H{
-			"msg": "hi",
+			"msg": "Hi api",
 		})
-		
 	})
 
 	r.GET("/slow", func (c*gin.Context)  {
-		time.Sleep(6*time.Second)
+
+		time.Sleep(4*time.Second)
 		c.JSON(200, gin.H{
 			"msg": "task done",
 		})
-		
 	})
-
-	// server start 
+ 
+	// start server 
 	srv := &http.Server{
-		Addr: ":5545",
+		Addr: ":6065",
 		Handler: r,
 	}
 
-	// go routine 
+	// go routine pe start server
 	go func() {
-		log.Printf("server started at port %s", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed{
-			log.Printf("err : %s", err)
+		log.Printf("server started at port %s\n", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("err: %s", err)
 		}
 	}()
 
-	// graceful shutdown
+	// graceful shurdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<- quit
 
-	log.Printf("system shutdown recieved💀")
+	log.Printf("System going to shutdown soon💀")
 
 	// ctx 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -63,5 +62,7 @@ func main(){
 		fmt.Println(err)
 	}
 
-	log.Printf("server gracefully shutdown✅")
+	log.Printf("Server shutdown gracefully!✅")
+
+
 }
