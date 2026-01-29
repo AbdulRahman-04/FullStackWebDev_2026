@@ -18,6 +18,11 @@ type Config struct {
 	JWT_KEY string
 	REFRESH_KEY string
 
+	Redis_Host string
+	Redis_Pass string
+    Redis_DB string
+
+
 	GoogleUserId string
 	GoogleUserSecret string
 	GoogleUserRedirect string
@@ -65,6 +70,10 @@ func LoadEnv(){
 	URL: os.Getenv("URL"),
 
 	GroqAPIKey: os.Getenv("GROQ_API_KEY"),
+
+	Redis_Host: os.Getenv("REDIS_HOST"),
+	Redis_Pass: os.Getenv("REDIS_PASS"),
+	Redis_DB: os.Getenv("REDIS_DB"),
 
 	// Google OAuth (User)
 	GoogleUserId:       os.Getenv("GOOGLE_CLIENT_ID_USER"),

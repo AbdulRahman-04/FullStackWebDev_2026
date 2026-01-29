@@ -20,6 +20,7 @@ func main(){
 
 	// database load
 	utils.ConnectPostgres()
+	utils.ConnectRedis()
  
 	// gin server 
 	r:= gin.Default()
