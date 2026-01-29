@@ -10,13 +10,23 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AbdulRahman-04/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/config"
+	"github.com/AbdulRahman-04/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func main(){
+
+	// loading config 
+	config.LoadConfig()
+
+	// db connect
+	utils.ConnectPostgres()
  
 	// create gin server 
 	r := gin.Default()
+
+	
 
 	r.GET("/", func (c*gin.Context)  {
 		c.JSON(200, gin.H{
@@ -34,7 +44,7 @@ func main(){
  
 	// start server 
 	srv := &http.Server{
-		Addr: ":6065",
+		Addr: ":" + config.AppConfig.Port,
 		Handler: r,
 	}
 
