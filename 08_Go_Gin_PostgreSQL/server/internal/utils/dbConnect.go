@@ -11,6 +11,7 @@ import (
 var PostgresDB *gorm.DB
 
 func ConnectPostgres(){
+ 
 	db, err := gorm.Open(postgres.Open(config.AppConfig.DB_URL), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("err %s", err)
@@ -18,5 +19,9 @@ func ConnectPostgres(){
 	}
 
 	PostgresDB = db
-	log.Printf("Postgres Connected✅")
+
+	log.Printf("PostgreSQL connected✅")
+
+
+
 }
