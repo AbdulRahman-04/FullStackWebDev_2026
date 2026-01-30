@@ -47,6 +47,7 @@ type Config struct {
 	Pass string
 
 	GroqAPIKey string
+	GroqAPIURL string
 
 }
 
@@ -70,6 +71,7 @@ func LoadEnv(){
 	URL: os.Getenv("URL"),
 
 	GroqAPIKey: os.Getenv("GROQ_API_KEY"),
+	GroqAPIURL: os.Getenv("GROQ_API_URL"),
 
 	Redis_Host: os.Getenv("REDIS_HOST"),
 	Redis_Pass: os.Getenv("REDIS_PASS"),
