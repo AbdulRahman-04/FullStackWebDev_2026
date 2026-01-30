@@ -70,29 +70,29 @@ var (
 func ConnectRedis(){
 	db, err := strconv.Atoi(config.AppConfig.Redis_DB)
 	if err != nil {
-		log.Fatalf("err %s", err)
+		log.Fatalf("Err %s", err)
 		return
 	}
-
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr: config.AppConfig.Redis_Host,
 		Password: config.AppConfig.Redis_Pass,
 		DB: db,
 	})
 
+	// ping redis 
 	if err := RedisClient.Ping(ctx).Err(); err != nil {
 		log.Fatalf("err %s", err)
 		return
 	}
 
-	log.Printf("Redis Connected successfully✅")
+	log.Printf("Redis Connected✅")
 }
 
-func RedisSetKey(key string, value string, ttl time.Duration) error{
+func RedisSetKey(key string, value string, ttl time.Duration) error {
 	return  RedisClient.Set(ctx, key, value, ttl).Err()
 }
 
-func RedisGetKey(key string) (string, error){
+func RedisGetKey(key string) (string, error) {
 	return  RedisClient.Get(ctx, key).Result()
 }
 
