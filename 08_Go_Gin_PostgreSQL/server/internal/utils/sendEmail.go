@@ -53,28 +53,29 @@ type EmailData struct {
 	Html string
 }
 
-func SendEmail(data EmailData) error {
-	// get user and pass 
+func SendEmail(emailData EmailData) error {
+ 
+	// get user and pass
 	user := config.AppConfig.Email
 	pass := config.AppConfig.Pass
 
-	// create sender
+	// create sender 
 	s := gomail.NewMessage()
 
 	s.SetAddressHeader("From", user, "Team social")
-	s.SetHeader("To", data.To)
-	s.SetHeader("Subject", data.Subject)
-	s.SetBody("text/plain", data.Text)
-	s.AddAlternative("text/html", data.Html)
+	s.SetHeader("To", emailData.To)
+	s.SetHeader("Subject", emailData.Subject)
+	s.SetBody("text/plain", emailData.Text)
+	s.AddAlternative("text/html", emailData.Html)
 
 	// create transporter
 	t := gomail.NewDialer("smtp.gmail.com", 465, user, pass)
 
-	// try sending
-	if err := t.DialAndSend(s); err != nil {
+	if err := t.DialAndSend(s); err  != nil {
 		return  err
 	}
 
 	log.Printf("email sent✅")
 	return  nil
+
 }
