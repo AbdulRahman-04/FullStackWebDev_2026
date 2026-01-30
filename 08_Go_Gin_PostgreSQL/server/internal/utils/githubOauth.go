@@ -6,23 +6,22 @@ import (
 	"golang.org/x/oauth2/github"
 )
 
-
-func GithubOauthUser() *oauth2.Config{
+func GithubOAuthUser() *oauth2.Config {
 	return &oauth2.Config{
-		ClientID: config.AppConfig.GithubUserId,
+		ClientID:     config.AppConfig.GithubUserId,
 		ClientSecret: config.AppConfig.GithubUserSecret,
-		RedirectURL: config.AppConfig.GithubUserRedirect,
-		Scopes: []string{"read:user", "user:email"},
-		Endpoint: github.Endpoint,
+		RedirectURL:  config.AppConfig.GithubUserRedirect,
+		Scopes:       []string{"read:user", "user:email"},
+		Endpoint:     github.Endpoint,
 	}
 }
 
-func GithubOauthAdmin() *oauth2.Config{
+func GithubOAuthAdmin() *oauth2.Config {
 	return &oauth2.Config{
-		ClientID: config.AppConfig.GithubAdminId,
+		ClientID:     config.AppConfig.GithubAdminId,
 		ClientSecret: config.AppConfig.GithubAdminSecret,
-		RedirectURL: config.AppConfig.GithubAdminRedirect,
-		Scopes: []string {"read:user", "user:email"},
-		Endpoint: github.Endpoint,
+		RedirectURL:  config.AppConfig.GithubAdminRedirect,
+		Scopes:       []string{"read:user", "user:email"},
+		Endpoint:     github.Endpoint,
 	}
 }

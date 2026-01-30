@@ -60,25 +60,26 @@ import (
 	"time"
 )
 
-var AIClient = &http.Client  {
+var AIClient = &http.Client{
 	Timeout: 15*time.Second,
 }
 
 func AIRequest(ctx context.Context, url string, apikey string, payload any, result any) error {
  
-	// convert json 
+ 
+	// convert payload to json
 	body, err := json.Marshal(payload)
-	if err != nil  {
-		return  err
+	if err != nil {
+		return err
 	}
 
 	// make new req
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
-    if err != nil {
+	if err != nil {
 		return  err
 	}
 
-	// set headers
+	// set headers 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+apikey)
 
@@ -87,7 +88,6 @@ func AIRequest(ctx context.Context, url string, apikey string, payload any, resu
 	if err != nil {
 		return  err
 	}
-
 	defer res.Body.Close()
 
 	// check status code 
@@ -96,5 +96,8 @@ func AIRequest(ctx context.Context, url string, apikey string, payload any, resu
 		return fmt.Errorf("err %s", string(b))
 	}
 
-	return  json.NewDecoder(res.Body).Decode(result)
+	// convert resp to json and store in struct
+	return json.NewDecoder(res.Body).Decode(result)
+
+
 }

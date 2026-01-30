@@ -118,10 +118,11 @@ var (
 )
 
 func ConnectRedis() {
- 
+  
+	// connect to redis 
 	db, err := strconv.Atoi(config.AppConfig.Redis_DB)
 	if err != nil {
-		log.Fatalf("err %s", err)
+		log.Println(err)
 		return
 	}
 
@@ -134,22 +135,22 @@ func ConnectRedis() {
 
 	// ping 
 	if err := RedisClient.Ping(ctx).Err(); err != nil {
-		log.Fatalf("err %s", err)
+		log.Println(err)
 		return
 	}
 
-	log.Printf("Redis Connected✅")
+	log.Println("Redis Connected✅")
+
 
 }
 
-func RedisSetKey( key string, value string, ttl time.Duration) error {
-	return RedisClient.Set(ctx,key, value, ttl).Err()
+func RedisSetKey(key string, value string, ttl time.Duration) error {
+	return RedisClient.Set(ctx, key, value, ttl).Err()
 }
 
-func RedisGetKey(key string) (string, error) {
-	return RedisClient.Get(ctx, key).Result()
+func RedisGetKey(key string) (string, error){
+	return  RedisClient.Get(ctx, key).Result()
 }
-
 func RedisDelKey(key string) error {
-	return  RedisClient.Del(ctx, key).Err()
+	return RedisClient.Del(ctx, key).Err()
 }

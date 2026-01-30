@@ -10,7 +10,7 @@ func GoogleOAuthUser() *oauth2.Config{
 	return &oauth2.Config{
 		ClientID: config.AppConfig.GoogleUserId,
 		ClientSecret: config.AppConfig.GoogleUserSecret,
-		RedirectURL: config.AppConfig.GoogleUserRedirect,
+		RedirectURL: config.AppConfig.GoogleAdminRedirect,
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
 			"https://www.googleapis.com/auth/userinfo.profile",
@@ -24,7 +24,7 @@ func GoogleOAuthAdmin() *oauth2.Config{
 		ClientID: config.AppConfig.GoogleAdminId,
 		ClientSecret: config.AppConfig.GoogleAdminSecret,
 		RedirectURL: config.AppConfig.GoogleAdminRedirect,
-		Scopes: []string {
+		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
 			"https://www.googleapis.com/auth/userinfo.profile",
 		},

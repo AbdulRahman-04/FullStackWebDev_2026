@@ -10,27 +10,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UploadFile(c*gin.Context)(string, error){
-	// get file
+func UploadFile(c*gin.Context) (string, error){
+ 
+	// get file from formfile
 	file, err := c.FormFile("file")
 	if err != nil {
-		return  "", err
+		return "", err
 	}
 
-	// make uploads flder
+	// make uploads folder
 	err = os.MkdirAll("uploads", os.ModePerm)
 	if err != nil {
-		return  "", err
+		return "", err
 	}
 
-	// filename and path
-	fileName := fmt.Sprint(time.Now().Unix())+ "_"+ file.Filename
+	// create filename and filepath
+	fileName := fmt.Sprint(time.Now().Unix()) + "_" + file.Filename
 	filePath := filepath.Join("uploads", fileName)
 
 	// save changes 
-	err = c.SaveUploadedFile(file, filePath)
+	err = c.SaveUploadedFile(file, filePath); 
 	if err != nil {
-		return  "", err
+      return  "", err
 	}
 
 	return  filePath, nil

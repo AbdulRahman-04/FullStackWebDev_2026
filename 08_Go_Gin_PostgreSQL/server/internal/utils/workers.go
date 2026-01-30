@@ -43,7 +43,7 @@ func StartEmailWorker(){
 		for job := range EmailQueue {
 			err := SendEmail(job);
 			if err != nil {
-				log.Println("err", err)
+				log.Println(err)
 			}
 		}
 	}()
@@ -54,9 +54,9 @@ var SMSQueue = make(chan SMSdata, 50)
 func StartSMSWorker(){
 	go func() {
 		for job := range SMSQueue {
-			err := SendSMS(job);
+			err := SendSMS(job)
 			if err != nil {
-				log.Println("err", err)
+				log.Println(err)
 			}
 		}
 	}()
