@@ -4,27 +4,25 @@ import "time"
 
 type Follow struct {
 	ID uint `gorm:"primaryKey"`
+	FollowerID string `gorm:"type:uuid;not null;index"`
+	FollowingID string `gorm:"type:uuid;not null;index"`
 
-	FollowerID string `gorm:"type:uuid;index;not null"`
-	FollowingID string `gorm:"type:uuid;index;not null"`
-
-	Follower *User `gorm:"foreignKey:FollowerID;references:ID" json:"follower,omitempty"`
-	Following *User `gorm:"foreignKey:FollowingID;references:ID" json:"following,omitempty"`
-
-	CreatedAt time.Time `gorm:"autoCreateTime"`
+	Follower *Users `gorm:"foreignKey:FollowerID;references:ID" json:"follower,omitempty"`
+	Following *Users `gorm:"foreignKey:FollowingID;references:ID" json:"following,omitempty"`
+ 
+	CreatedAt time.Time
 }
 
-CREATE TABLE follow(
-	id SERIAL PRIMARY KEY,
+// CREATE TABLE follows(
+// 	id SERIAL PRIMARY KEY,
+// 	follower_id uuid NOT NULL,
+// 	following_id uuid NOT NULL,
 
-	follower_id uuid NOT NULL,
-	following_id uuid NOT NULL,
+// 	FOREIGN KEY(follower_id) REFERENCES users(id),
+// 	FOREIGN KEY(following_id) REFERENCES users(id),
 
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+// 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+// );
 
-	FOREIGN KEY(follower_id) REFERENCES  users(id),
-	FOREIGN KEY(following_id) REFERENCES users(id)
-);
-
-CREATE INDEX idx_follow_follower_id ON follow(follower_id);
-CREATE INDEX idx_follow_following_id ON follow(following_id);
+// CREATE INDEX idx_follows_follower_id ON follows(follower_id);
+// CREATE INDEX idx_follows_following_id ON follows(following_id);

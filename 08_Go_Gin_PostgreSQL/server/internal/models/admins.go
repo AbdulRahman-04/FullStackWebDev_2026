@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Admin struct {
+type Admins struct {
 	ID string `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Role string `gorm:"size:30;default:admin"`
 
@@ -22,7 +22,7 @@ type Admin struct {
 	RefreshExpiry time.Time
 
 	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+    UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
 // CREATE TABLE admins(
@@ -30,7 +30,7 @@ type Admin struct {
 // 	role VARCHAR(30) DEFAULT 'admin',
 
 // 	full_name VARCHAR(50) NOT NULL,
-// 	email VARCHAR(50) UNIQUE NOT NULL,
+// 	email VARCHAR(50) NOT NULL UNIQUE,
 // 	password TEXT NOT NULL,
 // 	phone VARCHAR(20) NOT NULL,
 // 	provider VARCHAR(30),
