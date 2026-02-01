@@ -10,7 +10,7 @@ type FollowRequest struct {
 
 	Status string `gorm:"default:pending"`
 
-	FromUser *User `gorm:"foreignKey:FromUserID;referneces:ID" json:"from_user_id,omitempty"`
+	FromUser *User `gorm:"foreignKey:FromUserID;references:ID" json:"from_user_id,omitempty"`
 	ToUser *User `gorm:"foreignKey:ToUserID;references:ID" json:"to_user_id,omitempty"`
 
 	CreatedAt time.Time `gorm:"autoCreateTime"`
