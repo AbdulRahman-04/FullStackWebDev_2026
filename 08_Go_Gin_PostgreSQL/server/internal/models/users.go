@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Users struct {
+type User struct {
 	ID string `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Role string `gorm:"size:30;default:user"`
 
@@ -16,21 +16,22 @@ type Users struct {
 	PhoneVerified bool `gorm:"default:false"`
 
 	EmailVerifyToken string
-	PhoneVerifyToken string 
+	PhoneVerifyToken string
 
-	RefreshToken string 
+	RefreshToken string
 	RefreshExpiry time.Time
 
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
+
 // CREATE TABLE users(
 // 	id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-// 	role VARCHAR(30) DEFAULT 'user',
+// 	role VARCHAR(30) DEFAULT  'user',
 
 // 	full_name VARCHAR(50) NOT NULL,
-// 	email VARCHAR(50) NOT NULL UNIQUE,
+// 	email VARCHAR(50)NOT NULL UNIQUE,
 // 	password TEXT NOT NULL,
 // 	phone VARCHAR(20) NOT NULL,
 // 	provider VARCHAR(30),
@@ -44,6 +45,6 @@ type Users struct {
 // 	refresh_token TEXT,
 // 	refresh_expiry TIMESTAMP,
 
-// 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-// 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+// 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    // updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 // )
