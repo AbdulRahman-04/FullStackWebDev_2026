@@ -10,11 +10,9 @@ import (
 
 var jwtKey = []byte(config.AppConfig.JWT_KEY)
 
-
 func AuthMiddleware() gin.HandlerFunc {
 	return  func (c*gin.Context)  {
-
-		// get auth header 
+		// get auth header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(401, gin.H{
@@ -24,29 +22,30 @@ func AuthMiddleware() gin.HandlerFunc {
 			return 
 		}
 
-		// get auth header spilit into parts 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
+		// split auth header in parts 
+        parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer"{
 			c.JSON(401, gin.H{
-				"msg": "invalid token format",
+				"msg":"invalid token format",
 			})
 			c.Abort()
 			return 
-		}
+		} 
 
-		//get token from parts 
-		tokenStr := parts[1]
+		// get token 
+		tokenstr := parts[1]
 
-		token, err := jwt.Parse(tokenStr, func (r*jwt.Token)(interface{}, error)  {
+		// jwt token verify
+		token, err := jwt.Parse(tokenstr, func (t*jwt.Token) (interface{}, error)  {
 			return  jwtKey, nil
 		})
 
 		if err != nil || !token.Valid {
-			 c.JSON(401, gin.H{
+			c.JSON(401, gin.H{
 				"msg": "invalid or expired token",
-			 })
-			 c.Abort()
-			 return 
+			})
+			c.Abort()
+			return 
 		}
 
 		// get claims from token 
