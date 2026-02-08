@@ -8,103 +8,101 @@ import (
 )
 
 type Config struct {
-	AppName string
-	Port string
-
-	URL string
-	JWT_KEY string
+	AppName         string
+	Port            string
+	DB_URL          string
+	URL             string
+	JWT_KEY         string
 	JWT_REFRESH_KEY string
 
-	DB_URL string
-	RedisHost string
-	RedisPass string
-	RedisDB string
 	GroqApiKey string
+	GroqApiURL string
 
-	GoogleClientID string
-	GoogleClientSecret string
-	GoogleClientRediect string
+	REDIS_DB   string
+	REDIS_HOST string
+	REDIS_PASS string
 
-	GoogleAdminID string
-	GoogleAdminSecret string
-	GoogleAdminRedirect string
+	GoogleClientID          string
+	GoogleClientSecret      string
+	GoogleClientRedirectURL string
 
-	GithubClientID string
-	GithubClientSecret string
-	GithubClientRedirect string
+	GoogleAdminID          string
+	GoogleAdminSecret      string
+	GoogleAdminRedirectURL string
 
-	GithubAdminID string
-	GithubAdminSecret string
-	GithubAdminRedirect string
+	GithubClientID          string
+	GithubClientSecret      string
+	GithubClientRedirectURL string
 
-	SID string
-	Token string
-	Phone string
+	GithubAdminID          string
+	GithubAdminSecret      string
+	GithubAdminRedirectURL string
 
-	Email string
-	Pass string
+	SID   string
+	TOKEN string
+	PHONE string
+
+	EMAIL string
+	PASS  string
 }
 
 var AppConfig *Config
 
-func LoadEnv(){
-	err := godotenv.Load()
-	if err != nil {
-		log.Printf("Couldn't load env")
+func LoadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Couldn't load env variables")
 	}
-	
+
 	cfg := &Config{
 		AppName: os.Getenv("APP_NAME"),
 		Port:    os.Getenv("PORT"),
+		DB_URL:  os.Getenv("DB_URL"),
+		URL:     os.Getenv("URL"),
 
-		URL:             os.Getenv("URL"),
 		JWT_KEY:         os.Getenv("JWT_KEY"),
 		JWT_REFRESH_KEY: os.Getenv("JWT_REFRESH_KEY"),
 
-		DB_URL:    os.Getenv("DB_URL"),
-		RedisHost: os.Getenv("REDIS_HOST"),
-		RedisPass: os.Getenv("REDIS_PASS"),
-		RedisDB:   os.Getenv("REDIS_DB"),
+		REDIS_DB:   os.Getenv("REDIS_DB"),
+		REDIS_HOST: os.Getenv("REDIS_HOST"),
+		REDIS_PASS: os.Getenv("REDIS_PASS"),
 
 		GroqApiKey: os.Getenv("GROQ_API_KEY"),
+		GroqApiURL: os.Getenv("GROQ_API_URL"),
 
-		GoogleClientID:     os.Getenv("GOOGLE_CLIENT_ID_USER"),
-		GoogleClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET_USER"),
-		GoogleClientRediect: os.Getenv("GOOGLE_REDIRECT_URL_USER"),
+		GoogleClientID:          os.Getenv("GOOGLE_CLIENT_ID_USER"),
+		GoogleClientSecret:      os.Getenv("GOOGLE_CLIENT_SECRET_USER"),
+		GoogleClientRedirectURL: os.Getenv("GOOGLE_REDIRECT_URL_USER"),
 
-		GoogleAdminID:      os.Getenv("GOOGLE_CLIENT_ID_ADMIN"),
-		GoogleAdminSecret:  os.Getenv("GOOGLE_CLIENT_SECRET_ADMIN"),
-		GoogleAdminRedirect: os.Getenv("GOOGLE_REDIRECT_URL_ADMIN"),
+		GoogleAdminID:          os.Getenv("GOOGLE_CLIENT_ID_ADMIN"),
+		GoogleAdminSecret:      os.Getenv("GOOGLE_CLIENT_SECRET_ADMIN"),
+		GoogleAdminRedirectURL: os.Getenv("GOOGLE_REDIRECT_URL_ADMIN"),
 
-		GithubClientID:     os.Getenv("GITHUB_CLIENT_ID_USER"),
-		GithubClientSecret: os.Getenv("GITHUB_CLIENT_SECRET_USER"),
-		GithubClientRedirect: os.Getenv("GITHUB_REDIRECT_URL_USER"),
+		GithubClientID:          os.Getenv("GITHUB_CLIENT_ID_USER"),
+		GithubClientSecret:      os.Getenv("GITHUB_CLIENT_SECRET_USER"),
+		GithubClientRedirectURL: os.Getenv("GITHUB_REDIRECT_URL_USER"),
 
-		GithubAdminID:     os.Getenv("GITHUB_CLIENT_ID_ADMIN"),
-		GithubAdminSecret: os.Getenv("GITHUB_CLIENT_SECRET_ADMIN"),
-		GithubAdminRedirect: os.Getenv("GITHUB_REDIRECT_URL_ADMIN"),
+		GithubAdminID:          os.Getenv("GITHUB_CLIENT_ID_ADMIN"),
+		GithubAdminSecret:      os.Getenv("GITHUB_CLIENT_SECRET_ADMIN"),
+		GithubAdminRedirectURL: os.Getenv("GITHUB_REDIRECT_URL_ADMIN"),
 
 		SID:   os.Getenv("TWILIO_ACCOUNT_SID"),
-		Token: os.Getenv("TWILIO_AUTH_TOKEN"),
-		Phone: os.Getenv("TWILIO_PHONE"),
+		TOKEN: os.Getenv("TWILIO_AUTH_TOKEN"),
+		PHONE: os.Getenv("TWILIO_PHONE"),
 
-		Email: os.Getenv("EMAIL_USER"),
-		Pass:  os.Getenv("EMAIL_PASS"),
+		EMAIL: os.Getenv("EMAIL_USER"),
+		PASS:  os.Getenv("EMAIL_PASS"),
 	}
 
-	if cfg.Port == "" || cfg.DB_URL == "" {
-		log.Printf("No Port no or DB_URL found in config")
-		return
+	if cfg.DB_URL == "" || cfg.Port == "" {
+		log.Fatalf("Db_url or port is missing")
 	}
 
 	if cfg.JWT_KEY == "" || cfg.JWT_REFRESH_KEY == "" {
-		log.Printf("NO JWT OR REFRESH KEY FOUND")
-		return
+		log.Fatalf("JWT KEY OR REFRESH KEY MISSING")
 	}
 
-	if cfg.GroqApiKey == "" {
-		log.Printf("No groq api key found")
-		return
+	if cfg.GroqApiKey == "" || cfg.GroqApiURL == "" {
+		log.Fatalf("Groq api key or url missing")
 	}
 
 	AppConfig = cfg
