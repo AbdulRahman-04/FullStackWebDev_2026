@@ -11,6 +11,8 @@ type User struct {
 	Password string `gorm:"not null"`
 
 	Phone string `gorm:"size:20;not null"`
+	Provider string `gorm:"size:30;not null"`
+	ProfilePicture string  `gorm:"default:''"`
 
 	EmailVerified bool `gorm:"default:false"`
 	PhoneVerified bool `gorm:"default:false"`

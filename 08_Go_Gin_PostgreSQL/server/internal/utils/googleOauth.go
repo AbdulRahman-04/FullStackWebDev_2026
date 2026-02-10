@@ -19,7 +19,7 @@ func GoogleOauthUser() *oauth2.Config {
 	}
 }
 
-func GoogleOauthAdminUser() *oauth2.Config {
+func GoogleOauthAdmin() *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     config.AppConfig.GoogleAdminID,
 		ClientSecret: config.AppConfig.GoogleAdminSecret,
