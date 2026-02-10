@@ -51,21 +51,25 @@ func main() {
 	r := gin.Default()
 
 	// ================================
-	// PUBLIC AUTH ROUTES (TESTING)
+	// PUBLIC AUTH ROUTES (USER + ADMIN)
 	// ================================
 	public := r.Group("/api/public")
 	{
-		// signup / login
+		// ---------------- USER ----------------
 		public.POST("/user/signup", publicAuth.UserSignup)
 		public.POST("/user/signin", publicAuth.UserSignin)
-
-		// verify
 		public.GET("/user/emailverify/:token", publicAuth.EmailVerify)
 		public.POST("/user/phoneverify", publicAuth.PhoneVerify)
-
-		// refresh + forgot
 		public.POST("/user/refresh", publicAuth.RefreshToken)
 		public.POST("/user/forgot-password", publicAuth.ForgotPassword)
+
+		// ---------------- ADMIN ----------------
+		public.POST("/admin/signup", publicAuth.AdminSignUp)
+		public.POST("/admin/signin", publicAuth.AdminSignIn)
+		public.GET("/admin/emailverify/:token", publicAuth.AdminEmailVerify)
+		public.POST("/admin/phoneverify", publicAuth.AdminPhoneVerify)
+		public.POST("/admin/refresh", publicAuth.AdminRefreshToken)
+		public.POST("/admin/forgot-password", publicAuth.AdminForgotPassword)
 	}
 
 	// --------------------
