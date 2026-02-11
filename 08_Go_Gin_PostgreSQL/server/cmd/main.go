@@ -12,7 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/config"
+	"github.com/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/controllers/private"
 	publicAuth "github.com/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/controllers/public"
+	"github.com/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/middleware"
 	"github.com/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/models"
 	"github.com/FullStackWebDev_2026/08_Go_Gin_PostgreSQL/server/internal/utils"
 )
@@ -40,6 +42,7 @@ func main() {
 	if err := utils.PostgresDB.AutoMigrate(
 		&models.User{},
 		&models.Admin{},
+		&models.Post{},
 	); err != nil {
 		log.Fatalf("❌ DB migration failed: %v", err)
 	}
@@ -70,6 +73,15 @@ func main() {
 		public.POST("/admin/phoneverify", publicAuth.AdminPhoneVerify)
 		public.POST("/admin/refresh", publicAuth.AdminRefreshToken)
 		public.POST("/admin/forgot-password", publicAuth.AdminForgotPassword)
+	}
+
+	// --------------------
+	// POSTS ROUTES
+	// --------------------
+	posts := r.Group("/api/posts")
+	{
+		posts.POST("/createpost", middleware.AuthMiddleware() ,private.CreatePost) // create post route
+	    posts.GET("/getallposts", middleware.AuthMiddleware(),private.GetAllPosts)   
 	}
 
 	// --------------------

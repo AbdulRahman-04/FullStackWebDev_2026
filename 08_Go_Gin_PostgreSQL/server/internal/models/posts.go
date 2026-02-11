@@ -10,6 +10,7 @@ type Post struct {
 	Song string `gorm:"type:text;not null"`
 	ImageUrl string `gorm:"type:text;not null"`
 	Location string `gorm:"type:text;not null"`
+	IsPublic bool `gorm:"type:boolean;not null"`
 
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 

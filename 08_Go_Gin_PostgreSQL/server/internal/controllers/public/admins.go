@@ -62,7 +62,7 @@ func AdminSignUp(c*gin.Context){
 	utils.PostgresDB.Model(&models.Admin{}).Where("email = ? OR phone = ?", adminInput.Email, adminInput.Phone).Count(&count)
 	if count > 0 {
 		c.JSON(400, gin.H{
-			"msg": "user already exist",
+			"msg": "admin email or phone already exist",
 		})
 		return
 	}
