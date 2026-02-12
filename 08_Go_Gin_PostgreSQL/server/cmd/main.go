@@ -82,6 +82,9 @@ func main() {
 	{
 		posts.POST("/createpost", middleware.AuthMiddleware() ,private.CreatePost) // create post route
 	    posts.GET("/getallposts", middleware.AuthMiddleware(),private.GetAllPosts)   
+	    posts.GET("/getone/:id", middleware.AuthMiddleware(), private.GetOnePost)
+		posts.PUT("/update/:id", middleware.AuthMiddleware(), private.UpdatePost)
+		posts.DELETE("/delete/:id", middleware.AuthMiddleware(), private.DeletePost)
 	}
 
 	// --------------------

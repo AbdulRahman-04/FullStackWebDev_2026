@@ -112,24 +112,24 @@ import (
 
 var ctx = context.Background()
 
+// create post api
 func CreatePost(c *gin.Context) {
-	// get user id
 	userIDInterface, exists := c.Get("userId")
-	if !exists || userIDInterface == "" {
+	if !exists {
 		c.JSON(400, gin.H{
-			"msg": "no user id found",
+			"msg": "unauthorised",
 		})
 		return
 	}
 
 	userId := userIDInterface.(string)
 
-	// struct
+	// make struct
 	type CreatePost struct {
 		Caption  string `json:"caption" form:"caption" binding:"required"`
 		Song     string `json:"song" form:"song" binding:"required"`
 		ImageUrl string `json:"image_url"`
-		Location string `json:"location" binding:"required"`
+		Location string `json:"location" form:"location" binding:"required"`
 		IsPublic bool   `json:"is_public" form:"is_public" binding:"required"`
 	}
 
@@ -141,8 +141,7 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
-	var imageUrl string
-
+	var image_url string
 	if strings.HasPrefix(c.ContentType(), "multipart/") {
 		_, err := c.FormFile("file")
 		if err != nil {
@@ -155,70 +154,81 @@ func CreatePost(c *gin.Context) {
 		url, err := utils.UploadFile(c)
 		if err != nil {
 			c.JSON(400, gin.H{
-				"msg": "couldn't upload file",
+				"msg": "file upload failed",
 			})
 			return
 		}
 
-		imageUrl = url
+		image_url = url
+	} else {
+		if postInput.ImageUrl == "" {
+			c.JSON(400, gin.H{
+				"msg": "image_url required",
+			})
+			return
+		}
+
+		image_url = postInput.ImageUrl
 	}
 
-	// create var nd push in db
+	// create post
 	var post models.Post
-
 	post.Caption = postInput.Caption
 	post.Song = postInput.Song
-	post.IsPublic = postInput.IsPublic
+	post.ImageUrl = image_url
 	post.Location = postInput.Location
-	post.ImageUrl = imageUrl
+	post.IsPublic = postInput.IsPublic
+	post.UserID = userId   // 🔥 THIS WAS MISSING
 
-	insertDb := utils.PostgresDB.Model(&models.Post{}).Create(&post)
-	if insertDb.Error != nil {
+	db := utils.PostgresDB.Model(&models.Post{}).Create(&post)
+	if db.Error != nil {
 		c.JSON(400, gin.H{
-			"msg": "invalid db error",
+			"msg": "invalid db err",
 		})
 		return
 	}
 
-	// redis cache invalidate
+	// invalidate redis cache - ye user k purane posts del krdo redis se
 	go invalidateFeedCache(userId)
+
+	c.JSON(200, gin.H{
+		"msg": "post created✅",
+	})
 }
 
 func invalidateFeedCache(userId string) {
-	key := "feed:" + userId
+	key := "post:" + userId
 	if err := utils.RedisDelKey(key); err != nil {
-		log.Printf("couldnt invalidate cache for user %s and err %v", userId, err)
+		log.Printf("%s %v", userId, err)
 	}
 }
 
-// get all posts 
-func GetAllPosts(c*gin.Context){
-	// make page : page depends on total value in db nd limit 
-	// e.g total post : 58 and limit 10 then pages are 6 
+// get all posts
+func GetAllPosts(c *gin.Context) {
+	// page and limit and offset
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
 	if page < 1 {
 		page = 1
 	}
-
 	if limit < 1 {
 		limit = 10
 	}
 
-	offset := (page - 1) *limit
+	// off set
+	offset := (page - 1) * limit
 
-	// create unique redis key
-	cachedKey := fmt.Sprintf("feed:%d:%d",page,limit)
+	cachedKey := fmt.Sprintf("posts:feed:%d:%d", page, limit)
 
-	// check redis first
-	cached, err := utils.RedisGetKey(cachedKey)
-	if err == nil && cached != "" {
+	// check redis
+	cachedData, err := utils.RedisGetKey(cachedKey)
+	if err == nil && cachedData != "" {
 		var posts []models.Post
-		if json.Unmarshal([]byte(cached), &posts) == nil {
+		if json.Unmarshal([]byte(cachedData), &posts) == nil {
 			c.JSON(200, gin.H{
-				"source":"redis",
-				"page": page,
+				"src":   "redis",
+				"page":  page,
 				"limit": limit,
 				"data": posts,
 			})
@@ -226,8 +236,9 @@ func GetAllPosts(c*gin.Context){
 		}
 	}
 
+	// if key isnt there in redis then check db
 	var posts []models.Post
-	db := utils.PostgresDB.Order("created_at DESC").Limit(limit).Offset(offset).Find(&posts)
+	db := utils.PostgresDB.Model(&models.Post{}).Limit(limit).Offset(offset).Find(&posts)
 	if db.Error != nil {
 		c.JSON(400, gin.H{
 			"msg": "db err",
@@ -235,18 +246,167 @@ func GetAllPosts(c*gin.Context){
 		return
 	}
 
-	// redis set 
-	bytes, err := json.Marshal(posts)
-	if err != nil {
-		log.Printf("couldnt into json")
+	// set redis key
+	bytes, _ := json.Marshal(posts)
+	go utils.RedisSetKey(cachedKey, string(bytes), 5*time.Hour)
+
+	c.JSON(200, gin.H{
+		"src":   "db",
+		"page":  page,
+		"limit": limit,
+		"data":  posts,
+	})
+}
+
+// get one api
+func GetOnePost(c *gin.Context) {
+
+	postId := c.Param("postId")
+
+	cacheKey := "post:" + postId
+
+	// redis check
+	cachedData, err := utils.RedisGetKey(cacheKey)
+	if err == nil && cachedData != "" {
+		var post models.Post
+		if json.Unmarshal([]byte(cachedData), &post) == nil {
+			c.JSON(200, gin.H{
+				"src":  "redis",
+				"post": post,
+			})
+			return
+		}
+	}
+
+	// db check
+	var post models.Post
+	db := utils.PostgresDB.Model(&models.Post{}).First(&post)
+	if db.Error != nil {
+		c.JSON(400, gin.H{
+			"msg": "err",
+		})
 		return
 	}
 
-	go utils.RedisSetKey(cachedKey, string(bytes), 60*time.Second)
+	// set in redis
+	bytes, _ := json.Marshal(post)
+	go utils.RedisSetKey(cacheKey, string(bytes), 5*time.Hour)
+
 	c.JSON(200, gin.H{
-		"source": "db",
-		"page": page,
-		"limit": limit,
-		"data": posts,
+		"src":  "db",
+		"post": post,
 	})
+
+}
+
+
+func UpdatePost(c *gin.Context) {
+
+	userID := c.MustGet("userId").(string)
+
+	// convert id to int (DB me bigint hai)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"msg": "invalid post id"})
+		return
+	}
+
+	// 🔹 Check post exists
+	var post models.Post
+	if err := utils.PostgresDB.First(&post, id).Error; err != nil {
+		c.JSON(404, gin.H{"msg": "post not found"})
+		return
+	}
+
+	// 🔹 Ownership check
+	if post.UserID != userID {
+		c.JSON(403, gin.H{"msg": "forbidden"})
+		return
+	}
+
+	// 🔹 Input struct
+	type UpdatePostInput struct {
+		Caption  *string `json:"caption"`
+		ImageURL *string `json:"image_url"`
+		Location *string `json:"location"`
+		IsPublic *bool   `json:"is_public"`
+	}
+
+	var input UpdatePostInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"msg": "invalid json"})
+		return
+	}
+
+	updates := map[string]any{
+		"updated_at": time.Now(),
+	}
+
+	if input.Caption != nil {
+		updates["caption"] = *input.Caption
+	}
+	if input.ImageURL != nil {
+		updates["image_url"] = *input.ImageURL
+	}
+	if input.Location != nil {
+		updates["location"] = *input.Location
+	}
+	if input.IsPublic != nil {
+		updates["is_public"] = *input.IsPublic
+	}
+
+	if len(updates) == 1 {
+		c.JSON(400, gin.H{"msg": "nothing to update"})
+		return
+	}
+
+	// 🔹 Update only this row
+	if err := utils.PostgresDB.Model(&post).Updates(updates).Error; err != nil {
+		c.JSON(500, gin.H{"msg": "update failed"})
+		return
+	}
+
+	// 🔹 Cache invalidation
+	go func() {
+		utils.RedisDelKey("post:" + strconv.Itoa(id))
+		invalidateFeedCache(userID)
+	}()
+
+	utils.PostgresDB.First(&post, id)
+
+	c.JSON(200, post)
+}
+
+func DeletePost(c *gin.Context) {
+
+	userID := c.MustGet("userId").(string)
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"msg": "invalid post id"})
+		return
+	}
+
+	var post models.Post
+	if err := utils.PostgresDB.First(&post, id).Error; err != nil {
+		c.JSON(404, gin.H{"msg": "post not found"})
+		return
+	}
+
+	if post.UserID != userID {
+		c.JSON(403, gin.H{"msg": "forbidden"})
+		return
+	}
+
+	if err := utils.PostgresDB.Delete(&post).Error; err != nil {
+		c.JSON(500, gin.H{"msg": "delete failed"})
+		return
+	}
+
+	go func() {
+		utils.RedisDelKey("post:" + strconv.Itoa(id))
+		invalidateFeedCache(userID)
+	}()
+
+	c.JSON(200, gin.H{"msg": "deleted"})
 }

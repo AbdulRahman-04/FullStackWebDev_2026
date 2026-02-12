@@ -109,7 +109,7 @@ func UserSignup(c *gin.Context) {
 	user.Provider = "email"
 
 	// create user in db
-	res := utils.PostgresDB.Model(&models.User{}).Create(&user)
+	res := utils.PostgresDB.Create(&user)
 
 	if res.Error != nil {
 		c.JSON(400, gin.H{
@@ -142,6 +142,9 @@ func UserSignup(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"msg": "User signed up successfully!🎉, verify ur email nd pass nd login",
 	})
+
+	fmt.Println("Generated User ID:", user.ID)
+
 }
 
 // email verify api
