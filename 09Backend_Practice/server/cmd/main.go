@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/AbdulRahman-04/FullStackWebDev_2026/09Backend_Practice/server/internal/config"
+	"github.com/AbdulRahman-04/FullStackWebDev_2026/09Backend_Practice/server/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +19,10 @@ func main() {
 
 	// load config
 	config.LoadEnv()
+
+	// connect db 
+	utils.ConnectPostgres()
+	utils.ConnectRedis()
 
 	// initialise gin server 
 	r := gin.Default()
