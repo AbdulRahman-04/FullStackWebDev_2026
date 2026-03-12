@@ -19,6 +19,9 @@ type User struct {
 
 	EmailVerifyToken string
 
+	RefreshToken string
+	RefreshExpiry time.Time
+
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }

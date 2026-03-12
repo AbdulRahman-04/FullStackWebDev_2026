@@ -9,82 +9,79 @@ import (
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return  func (c*gin.Context)  {
 
-		// get jwt key
 		var jwtKey = []byte(config.AppConfig.JWT_KEY)
 
-		// get auth header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(400, gin.H{
 				"msg": "missing token",
 			})
 			c.Abort()
-			return
+			return 
 		}
 
-		// get auth header in parts
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(401, gin.H{
-				"msg": "invaid token format",
+			c.JSON(400, gin.H{
+				"msg":"invalid token format",
 			})
 			c.Abort()
-			return
+			return 
 		}
 
 		tokenStr := parts[1]
 
-		// token verify
-		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		// token verify 
+		token, err := jwt.Parse(tokenStr, func (t*jwt.Token) (interface{}, error)  {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, jwt.ErrSignatureInvalid
+				return  nil , jwt.ErrSignatureInvalid
 			}
+
 			return jwtKey, nil
 		})
 
-		if err != nil || !token.Valid {
+		if err != nil {
 			c.JSON(400, gin.H{
-				"msg": "invalid token or expired",
+				"msg": "invalid or expired  token",
 			})
 			c.Abort()
-			return
+			return 
 		}
 
 		// get claims from token 
-		claims, ok := token.Claims.(jwt.MapClaims)
+		claims,ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			c.JSON(401, gin.H{
-				"msg": "no claims found",
+			c.JSON(400, gin.H{
+				"msg": "no claims found in token",
 			})
 			c.Abort()
-			return
+			return 
 		}
 
-		// get userid nd role from token 
 		userId, ok := claims["id"].(string)
 		if !ok {
-			c.JSON(401, gin.H{
-				"msg": "no user id found",
+			c.JSON(400, gin.H{
+				"msg": "no userId found",
 			})
 			c.Abort()
-			return
+			return 
 		}
 
-		role, ok := claims["role"].(string)
+		role,ok := claims["role"].(string)
 		if !ok {
-			c.JSON(401, gin.H{
+			c.JSON(400, gin.H{
 				"msg": "no role found",
 			})
 			c.Abort()
-			return
+			return 
 		}
 
-		c.Set("userid", userId)
+		c.Set("userId", userId)
 		c.Set("role", role)
 
 		c.Next()
-
+		
 	}
 }

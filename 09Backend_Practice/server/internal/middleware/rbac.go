@@ -26,7 +26,6 @@ func OnlyAdmins() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		c.Next()
 
 	}

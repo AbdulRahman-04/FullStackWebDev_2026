@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	green = "\033[32m"
-	red   = "\033[31m"
+	green = "\033[032m"
+	red   = "\033[031m"
 	reset = "\033[0m"
 )
 
@@ -32,5 +32,6 @@ func SimpleLogger() gin.HandlerFunc {
 
 		log.Printf("%s%s %s -> %d (%v)%s",
 			color, method, path, status, duration, reset)
+
 	}
 }
